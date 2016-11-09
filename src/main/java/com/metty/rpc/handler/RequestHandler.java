@@ -9,6 +9,7 @@ import io.netty.channel.Channel;
 public interface RequestHandler<Request, Response> extends Runnable {
     void setServer(Server server);
     void setRequest(Request request);
+    void setData(byte[] data);
     void setChannel(Channel channel);
     void setTimeStamp(long timeStamp);
     Response doRun() throws Exception;

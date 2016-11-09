@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
 
 import java.nio.charset.Charset;
 
@@ -22,19 +23,19 @@ public class HttpUtil {
         if (response instanceof HttpResponse) {
             httpResponse = (HttpResponse)response;
         } else {
+            ByteBuf buffer = Unpooled.EMPTY_BUFFER;
             HttpResponseStatus status = HttpResponseStatus.OK;
-            if (response instanceof  Throwable) {
+            if (response instanceof Throwable) {
                 status = response instanceof IllegalAccessException ? HttpResponseStatus.NOT_FOUND : HttpResponseStatus.BAD_REQUEST;
             }
 
-            ByteBuf buffer = Unpooled.EMPTY_BUFFER;
             if (response != null) {
                 if (response instanceof ByteBuf) {
                     buffer = Unpooled.copiedBuffer((ByteBuf)response);
                 } else if (response instanceof byte[]) {
                     buffer = Unpooled.wrappedBuffer((byte[])response);
                 } else {
-                    buffer = Unpooled.wrappedBuffer(response.toString().getBytes(Charset.forName("UTF-8")));
+                    buffer = Unpooled.copiedBuffer(response.toString(), CharsetUtil.UTF_8);
                 }
             }
 
@@ -46,7 +47,8 @@ public class HttpUtil {
 
         httpResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
         httpResponse.headers().set("Time-Used", (System.currentTimeMillis() - accessTime) + "ms");
-
-        channel.writeAndFlush(httpResponse).addListener(ChannelFutureListener.CLOSE);
+        if (channel.isWritable()) {
+            channel.writeAndFlush(httpResponse).addListener(ChannelFutureListener.CLOSE);
+        }
     }
 }

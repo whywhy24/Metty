@@ -2,6 +2,7 @@ package com.metty.rpc.netty;
 
 import com.metty.rpc.common.HttpUtil;
 import com.metty.rpc.handler.RequestHandler;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -40,9 +41,17 @@ public class HttpHandlerProxy extends SimpleChannelInboundHandler<FullHttpReques
 
         RequestParser requestParser = httpServer.getRequestParser();
         RequestHandler requestHandler = requestParser.parse(request);
+
+
+        ByteBuf byteBuf = request.content();
+        byte[] data = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(data);
+
         requestHandler.setRequest(request);
         requestHandler.setTimeStamp(timeStamp);
         requestHandler.setChannel(ctx.channel());
+        requestHandler.setData(data);
+        requestHandler.setServer(httpServer);
         httpServer.getExecutorService().submit(requestHandler);
     }
 

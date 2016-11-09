@@ -7,6 +7,6 @@ public class EmptyHandler extends SimpleHttpRequestHandler<String> {
 
     @Override
     public String doRun() throws Exception {
-        return "";
+        return null;
     }
 }

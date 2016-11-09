@@ -12,7 +12,7 @@ public abstract class SimpleHttpRequestHandler<Response> extends HttpRequestHand
         Object response;
         try {
             response = doRun();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             response = e;
         }
 

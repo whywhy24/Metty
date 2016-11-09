@@ -9,6 +9,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 public abstract class HttpRequestHandler<Response> extends AbstractRequestHandler<FullHttpRequest, Response> {
     protected FullHttpRequest httpRequest;
     protected Channel channel;
+    protected byte[] data;
 
     @Override
     public void setRequest(FullHttpRequest httpRequest) {
@@ -20,4 +21,8 @@ public abstract class HttpRequestHandler<Response> extends AbstractRequestHandle
         this.channel = channel;
     }
 
+    @Override
+    public void setData(byte[] data) {
+        this.data = data;
+    }
 }
